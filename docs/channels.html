@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Channels — OpenHoof Docs</title>
+  <link rel="stylesheet" href="docs-style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐴</text></svg>">
+</head>
+<body>
+  <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">☰</button>
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <div class="docs-layout">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" class="sidebar-logo">Open<span>Hoof</span></a>
+        <span class="sidebar-badge">docs</span>
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Getting Started</div>
+          <a href="index.html" class="sidebar-link">
+            <span class="sidebar-link-icon">⚡</span> Introduction
+          </a>
+          <a href="installation.html" class="sidebar-link">
+            <span class="sidebar-link-icon">📦</span> Installation
+          </a>
+          <a href="configuration.html" class="sidebar-link">
+            <span class="sidebar-link-icon">⚙️</span> Configuration
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Core Features</div>
+          <a href="channels.html" class="sidebar-link active">
+            <span class="sidebar-link-icon">💬</span> Channels
+          </a>
+          <a href="skills.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🧩</span> Skills
+          </a>
+          <a href="memory.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🧠</span> Memory
+          </a>
+          <a href="agents.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🤖</span> Agents
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Reference</div>
+          <a href="api.html" class="sidebar-link">
+            <span class="sidebar-link-icon">📡</span> API Reference
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="content-header">
+        <div class="breadcrumb">
+          <a href="../index.html">OpenHoof</a>
+          <span class="breadcrumb-sep">/</span>
+          <a href="index.html">Docs</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Channels</span>
+        </div>
+        <div class="header-links">
+          <a href="https://github.com/openclaw/openhoof" class="header-link">GitHub</a>
+        </div>
+      </div>
+
+      <div class="content">
+        <h1>Connecting <span class="accent">Channels</span></h1>
+        <p class="subtitle">Channels let you talk to your AI agent through the messaging apps you already use. OpenHoof supports Telegram, Discord, WhatsApp, Slack, Signal, iMessage, and LINE out of the box.</p>
+
+        <h2>How Channels Work</h2>
+        <p>Each channel is a bidirectional bridge between a messaging platform and your OpenHoof daemon. When a message arrives through any channel, it's routed to your configured AI agent. The response is streamed back through the same channel.</p>
+        <p>You can run multiple channels simultaneously. A message from Telegram and a message from Discord both reach the same agent, with the same memory and skills. Channel-specific context (like the sender's username) is passed to the agent automatically.</p>
+
+        <h2>Webchat (Built-in)</h2>
+        <p>The webchat UI is enabled by default at <code>http://localhost:3777</code>. No configuration needed — it works as soon as the daemon starts. The webchat supports markdown rendering, code highlighting, file uploads, and streaming responses.</p>
+
+<pre><code class="language-json">{
+  "channels": {
+    "webchat": {
+      "enabled": true,
+      "title": "OpenHoof Chat",
+      "theme": "dark"
+    }
+  }
+}</code></pre>
+
+        <h2>Telegram</h2>
+        <p>Connect your AI to a Telegram bot. Users can message it directly or add it to group chats.</p>
+
+        <h3>Setup</h3>
+        <ol>
+          <li>Message <code>@BotFather</code> on Telegram and create a new bot with <code>/newbot</code></li>
+          <li>Copy the bot token</li>
+          <li>Add it to your config:</li>
+        </ol>
+
+<pre><code class="language-json">{
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "123456789:ABCdefGhIjKlMnOpQrStUvWxYz",
+      "allowedUsers": [],
+      "allowGroups": true
+    }
+  }
+}</code></pre>
+
+        <p>Set <code>allowedUsers</code> to an array of Telegram user IDs to restrict access. Leave empty to allow anyone. Set <code>allowGroups</code> to <code>false</code> to disable group chat responses.</p>
+
+<pre><code class="language-bash"># Or configure via CLI
+openhoof channel add telegram --token "123456789:ABCdef..."</code></pre>
+
+        <h2>Discord</h2>
+        <p>Run your AI as a Discord bot in your server.</p>
+
+        <h3>Setup</h3>
+        <ol>
+          <li>Go to the <a href="https://discord.com/developers/applications">Discord Developer Portal</a> and create an application</li>
+          <li>Under "Bot", create a bot and copy the token</li>
+          <li>Under "OAuth2 &gt; URL Generator", select <code>bot</code> scope with "Send Messages" and "Read Message History" permissions</li>
+          <li>Use the generated URL to invite the bot to your server</li>
+        </ol>
+
+<pre><code class="language-json">{
+  "channels": {
+    "discord": {
+      "enabled": true,
+      "botToken": "MTIz...",
+      "allowedChannels": ["general", "ai-chat"],
+      "respondToMentions": true
+    }
+  }
+}</code></pre>
+
+        <p>When <code>respondToMentions</code> is true, the bot only responds in group channels when @mentioned. It always responds in DMs.</p>
+
+        <h2>WhatsApp</h2>
+        <p>Connect via the WhatsApp Web protocol. This uses a local browser session — no Business API needed.</p>
+
+<pre><code class="language-json">{
+  "channels": {
+    "whatsapp": {
+      "enabled": true,
+      "sessionPath": "~/.openhoof/whatsapp-session",
+      "allowedNumbers": ["+1234567890"]
+    }
+  }
+}</code></pre>
+
+<pre><code class="language-bash"># Start the WhatsApp connection (shows QR code to scan)
+openhoof channel connect whatsapp</code></pre>
+
+        <p>On first connect, a QR code is displayed in the terminal. Scan it with WhatsApp on your phone. The session persists until you disconnect.</p>
+
+        <h2>Slack</h2>
+        <p>Add your AI as a Slack app in your workspace.</p>
+
+<pre><code class="language-json">{
+  "channels": {
+    "slack": {
+      "enabled": true,
+      "botToken": "xoxb-...",
+      "appToken": "xapp-...",
+      "allowedChannels": ["ai-assistant"]
+    }
+  }
+}</code></pre>
+
+        <p>You'll need to create a Slack app with Socket Mode enabled. Required scopes: <code>chat:write</code>, <code>app_mentions:read</code>, <code>im:history</code>, <code>im:read</code>, <code>im:write</code>.</p>
+
+        <h2>Signal</h2>
+        <p>Connect to Signal via the signal-cli bridge:</p>
+
+<pre><code class="language-json">{
+  "channels": {
+    "signal": {
+      "enabled": true,
+      "phoneNumber": "+1234567890",
+      "signalCliPath": "/usr/local/bin/signal-cli"
+    }
+  }
+}</code></pre>
+
+        <div class="callout callout-info">
+          <span class="callout-icon">ℹ️</span>
+          <div>Signal requires <code>signal-cli</code> to be installed separately. Install it via your package manager: <code>brew install signal-cli</code> (macOS) or <code>apt install signal-cli</code> (Linux).</div>
+        </div>
+
+        <h2>iMessage</h2>
+        <p>macOS only. Uses AppleScript to send and receive iMessages:</p>
+
+<pre><code class="language-json">{
+  "channels": {
+    "imessage": {
+      "enabled": true,
+      "pollInterval": 2000,
+      "allowedContacts": []
+    }
+  }
+}</code></pre>
+
+        <p>Requires macOS with Messages app configured. Grant OpenHoof accessibility permissions when prompted.</p>
+
+        <h2>LINE</h2>
+        <p>Connect to LINE via the Messaging API:</p>
+
+<pre><code class="language-json">{
+  "channels": {
+    "line": {
+      "enabled": true,
+      "channelAccessToken": "...",
+      "channelSecret": "..."
+    }
+  }
+}</code></pre>
+
+        <p>Create a LINE Messaging API channel at the <a href="https://developers.line.biz/">LINE Developers Console</a>. Set the webhook URL to your daemon's public endpoint.</p>
+
+        <h2>Channel CLI Commands</h2>
+
+<pre><code class="language-bash"># List all configured channels
+openhoof channel list
+
+# Add a new channel interactively
+openhoof channel add &lt;type&gt;
+
+# Test a channel connection
+openhoof channel test &lt;type&gt;
+
+# Remove a channel
+openhoof channel remove &lt;type&gt;</code></pre>
+
+        <div class="page-nav">
+          <a href="configuration.html">← Configuration</a>
+          <a href="skills.html" class="next">Skills →</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    hljs.highlightAll();
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

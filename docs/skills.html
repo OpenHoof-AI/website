@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills — OpenHoof Docs</title>
+  <link rel="stylesheet" href="docs-style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐴</text></svg>">
+</head>
+<body>
+  <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">☰</button>
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <div class="docs-layout">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" class="sidebar-logo">Open<span>Hoof</span></a>
+        <span class="sidebar-badge">docs</span>
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Getting Started</div>
+          <a href="index.html" class="sidebar-link">
+            <span class="sidebar-link-icon">⚡</span> Introduction
+          </a>
+          <a href="installation.html" class="sidebar-link">
+            <span class="sidebar-link-icon">📦</span> Installation
+          </a>
+          <a href="configuration.html" class="sidebar-link">
+            <span class="sidebar-link-icon">⚙️</span> Configuration
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Core Features</div>
+          <a href="channels.html" class="sidebar-link">
+            <span class="sidebar-link-icon">💬</span> Channels
+          </a>
+          <a href="skills.html" class="sidebar-link active">
+            <span class="sidebar-link-icon">🧩</span> Skills
+          </a>
+          <a href="memory.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🧠</span> Memory
+          </a>
+          <a href="agents.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🤖</span> Agents
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Reference</div>
+          <a href="api.html" class="sidebar-link">
+            <span class="sidebar-link-icon">📡</span> API Reference
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="content-header">
+        <div class="breadcrumb">
+          <a href="../index.html">OpenHoof</a>
+          <span class="breadcrumb-sep">/</span>
+          <a href="index.html">Docs</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Skills</span>
+        </div>
+        <div class="header-links">
+          <a href="https://github.com/openclaw/openhoof" class="header-link">GitHub</a>
+        </div>
+      </div>
+
+      <div class="content">
+        <h1>Skills &amp; <span class="accent">Plugins</span></h1>
+        <p class="subtitle">Skills are modular plugins that extend your agent's capabilities. They give your AI new tools — from web browsing and code execution to image generation and file management.</p>
+
+        <h2>How Skills Work</h2>
+        <p>Skills are tool definitions that get injected into your agent's context. When the AI determines it needs to use a skill (like browsing a webpage or running code), it calls the skill function, and OpenHoof executes it locally on your machine. The result is passed back to the AI for its response.</p>
+        <p>Each skill is a self-contained module with a manifest that describes its capabilities, required permissions, and configuration options. Skills run in their own process sandbox by default, though you can disable sandboxing for trusted skills.</p>
+
+        <h2>Built-in Skills</h2>
+        <p>OpenHoof ships with several skills pre-installed:</p>
+
+        <ul>
+          <li><strong>web-browse</strong> — Browse any URL and extract content. Uses a headless Chromium instance for full JavaScript rendering.</li>
+          <li><strong>code-exec</strong> — Execute code in Python, Node.js, Bash, or any installed language runtime. Runs in a subprocess with configurable timeouts.</li>
+          <li><strong>file-manager</strong> — Read, write, move, and delete files on your filesystem. The agent can manage your files directly.</li>
+          <li><strong>web-search</strong> — Search the web via DuckDuckGo, Google, or Brave Search APIs.</li>
+          <li><strong>shell</strong> — Execute arbitrary shell commands. Full terminal access for your AI.</li>
+          <li><strong>screenshot</strong> — Capture screenshots of your desktop or specific windows.</li>
+        </ul>
+
+        <h2>Installing Skills</h2>
+        <p>Install community skills from the OpenHoof skill registry:</p>
+
+<pre><code class="language-bash"># Install a skill by name
+openhoof skill install image-gen
+
+# Install from a git repository
+openhoof skill install https://github.com/user/openhoof-skill-example.git
+
+# Install from a local directory
+openhoof skill install ./my-custom-skill</code></pre>
+
+        <p>Skills are installed to <code>~/.openhoof/skills/</code> by default.</p>
+
+        <h3>Managing Skills</h3>
+
+<pre><code class="language-bash"># List installed skills
+openhoof skill list
+
+# Get info about a skill
+openhoof skill info web-browse
+
+# Update all skills
+openhoof skill update
+
+# Remove a skill
+openhoof skill remove image-gen
+
+# Disable a skill without removing it
+openhoof skill disable image-gen
+
+# Re-enable a disabled skill
+openhoof skill enable image-gen</code></pre>
+
+        <h2>Writing Custom Skills</h2>
+        <p>Create your own skills to give your agent custom capabilities. A skill is a directory with a manifest and an entry point:</p>
+
+<pre><code class="language-bash"># Scaffold a new skill
+openhoof skill create my-skill</code></pre>
+
+        <p>This creates the following structure:</p>
+
+<pre><code class="language-text">my-skill/
+  manifest.json    # Skill metadata and tool definitions
+  index.js         # Entry point
+  package.json     # Dependencies (optional)</code></pre>
+
+        <h3>Manifest File</h3>
+        <p>The <code>manifest.json</code> describes your skill and its tools:</p>
+
+<pre><code class="language-json">{
+  "name": "my-skill",
+  "version": "1.0.0",
+  "description": "A custom skill that does something useful",
+  "author": "your-name",
+  "tools": [
+    {
+      "name": "do_something",
+      "description": "Performs a specific action with the given input",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "The input to process"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["json", "text", "markdown"],
+            "description": "Output format"
+          }
+        },
+        "required": ["input"]
+      }
+    }
+  ],
+  "permissions": ["filesystem", "network"],
+  "sandbox": true
+}</code></pre>
+
+        <h3>Entry Point</h3>
+        <p>The <code>index.js</code> file exports handler functions matching your tool names:</p>
+
+<pre><code class="language-javascript">module.exports = {
+  async do_something({ input, format = "text" }) {
+    // Your skill logic here
+    const result = await processInput(input);
+
+    if (format === "json") {
+      return JSON.stringify(result, null, 2);
+    }
+
+    return result.toString();
+  }
+};
+
+async function processInput(input) {
+  // Process the input and return a result
+  return { processed: true, data: input.toUpperCase() };
+}</code></pre>
+
+        <h3>Skill Permissions</h3>
+        <p>Skills declare the permissions they need in the manifest:</p>
+
+        <table class="config-table">
+          <thead>
+            <tr><th>Permission</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>filesystem</code></td><td>Read and write files</td></tr>
+            <tr><td><code>network</code></td><td>Make HTTP requests and open sockets</td></tr>
+            <tr><td><code>shell</code></td><td>Execute shell commands</td></tr>
+            <tr><td><code>browser</code></td><td>Control the headless browser</td></tr>
+            <tr><td><code>clipboard</code></td><td>Access the system clipboard</td></tr>
+            <tr><td><code>notifications</code></td><td>Send desktop notifications</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Skill Configuration</h2>
+        <p>Skills can have custom config options in your main config file:</p>
+
+<pre><code class="language-json">{
+  "skills": {
+    "autoLoad": true,
+    "directory": "~/.openhoof/skills",
+    "config": {
+      "web-browse": {
+        "headless": true,
+        "timeout": 30000,
+        "userAgent": "OpenHoof/1.0"
+      },
+      "code-exec": {
+        "timeout": 60000,
+        "maxOutputSize": "10MB"
+      }
+    }
+  }
+}</code></pre>
+
+        <div class="callout callout-tip">
+          <span class="callout-icon">💡</span>
+          <div>Community skills are available at the <a href="https://openhoof.dev/marketplace">OpenHoof Marketplace</a>. Browse and install skills for image generation, database queries, API integrations, and more.</div>
+        </div>
+
+        <div class="page-nav">
+          <a href="channels.html">← Channels</a>
+          <a href="memory.html" class="next">Memory →</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    hljs.highlightAll();
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

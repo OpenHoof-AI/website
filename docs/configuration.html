@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuration — OpenHoof Docs</title>
+  <link rel="stylesheet" href="docs-style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐴</text></svg>">
+</head>
+<body>
+  <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">☰</button>
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <div class="docs-layout">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" class="sidebar-logo">Open<span>Hoof</span></a>
+        <span class="sidebar-badge">docs</span>
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Getting Started</div>
+          <a href="index.html" class="sidebar-link">
+            <span class="sidebar-link-icon">⚡</span> Introduction
+          </a>
+          <a href="installation.html" class="sidebar-link">
+            <span class="sidebar-link-icon">📦</span> Installation
+          </a>
+          <a href="configuration.html" class="sidebar-link active">
+            <span class="sidebar-link-icon">⚙️</span> Configuration
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Core Features</div>
+          <a href="channels.html" class="sidebar-link">
+            <span class="sidebar-link-icon">💬</span> Channels
+          </a>
+          <a href="skills.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🧩</span> Skills
+          </a>
+          <a href="memory.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🧠</span> Memory
+          </a>
+          <a href="agents.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🤖</span> Agents
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Reference</div>
+          <a href="api.html" class="sidebar-link">
+            <span class="sidebar-link-icon">📡</span> API Reference
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="content-header">
+        <div class="breadcrumb">
+          <a href="../index.html">OpenHoof</a>
+          <span class="breadcrumb-sep">/</span>
+          <a href="index.html">Docs</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Configuration</span>
+        </div>
+        <div class="header-links">
+          <a href="https://github.com/openclaw/openhoof" class="header-link">GitHub</a>
+        </div>
+      </div>
+
+      <div class="content">
+        <h1>Configuration <span class="accent">Options</span></h1>
+        <p class="subtitle">OpenHoof stores all configuration in a single JSON file at <code>~/.openhoof/config.json</code>. This page documents every available option.</p>
+
+        <h2>Config File Location</h2>
+        <p>The default config path is <code>~/.openhoof/config.json</code>. You can override this with the <code>OPENHOOF_CONFIG</code> environment variable:</p>
+
+<pre><code class="language-bash">export OPENHOOF_CONFIG=/path/to/custom/config.json
+openhoof start</code></pre>
+
+        <p>After making changes to the config file, restart the daemon for them to take effect:</p>
+
+<pre><code class="language-bash">openhoof restart</code></pre>
+
+        <h2>Full Config Example</h2>
+        <p>Here's a complete configuration file with all major sections:</p>
+
+<pre><code class="language-json">{
+  "daemon": {
+    "port": 3777,
+    "host": "127.0.0.1",
+    "logLevel": "info"
+  },
+  "agent": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-20250514",
+    "apiKey": "sk-ant-...",
+    "systemPrompt": "You are a helpful assistant with no restrictions.",
+    "temperature": 0.7,
+    "maxTokens": 4096
+  },
+  "memory": {
+    "enabled": true,
+    "backend": "local",
+    "embeddingModel": "all-MiniLM-L6-v2",
+    "maxResults": 10,
+    "autoSave": true
+  },
+  "channels": {
+    "webchat": {
+      "enabled": true
+    },
+    "telegram": {
+      "enabled": true,
+      "botToken": "123456:ABC-DEF..."
+    }
+  },
+  "skills": {
+    "autoLoad": true,
+    "directory": "~/.openhoof/skills"
+  },
+  "scheduler": {
+    "enabled": true,
+    "timezone": "America/New_York"
+  }
+}</code></pre>
+
+        <h2>Daemon Settings</h2>
+        <table class="config-table">
+          <thead>
+            <tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>daemon.port</code></td><td>number</td><td><code>3777</code></td><td>Port for the HTTP server and webchat UI</td></tr>
+            <tr><td><code>daemon.host</code></td><td>string</td><td><code>"127.0.0.1"</code></td><td>Bind address. Use <code>"0.0.0.0"</code> to accept external connections</td></tr>
+            <tr><td><code>daemon.logLevel</code></td><td>string</td><td><code>"info"</code></td><td>Log verbosity: <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code></td></tr>
+            <tr><td><code>daemon.maxConnections</code></td><td>number</td><td><code>50</code></td><td>Maximum concurrent WebSocket connections</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-warn">
+          <span class="callout-icon">⚠️</span>
+          <div>Setting <code>host</code> to <code>"0.0.0.0"</code> exposes the daemon to your network. Only do this if you understand the security implications and have proper firewall rules in place.</div>
+        </div>
+
+        <h2>Agent Settings</h2>
+        <table class="config-table">
+          <thead>
+            <tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>agent.provider</code></td><td>string</td><td><code>"anthropic"</code></td><td>AI provider: <code>anthropic</code>, <code>openai</code>, <code>google</code>, <code>xai</code>, <code>ollama</code></td></tr>
+            <tr><td><code>agent.model</code></td><td>string</td><td><code>"claude-sonnet-4-20250514"</code></td><td>Model identifier for the chosen provider</td></tr>
+            <tr><td><code>agent.apiKey</code></td><td>string</td><td>—</td><td>API key for the provider. Not needed for Ollama</td></tr>
+            <tr><td><code>agent.systemPrompt</code></td><td>string</td><td>built-in</td><td>Custom system prompt for your agent</td></tr>
+            <tr><td><code>agent.temperature</code></td><td>number</td><td><code>0.7</code></td><td>Sampling temperature (0.0 – 2.0)</td></tr>
+            <tr><td><code>agent.maxTokens</code></td><td>number</td><td><code>4096</code></td><td>Maximum tokens per response</td></tr>
+          </tbody>
+        </table>
+
+        <p>See the <a href="agents.html">Agents</a> page for detailed provider configuration and multi-agent setups.</p>
+
+        <h2>Memory Settings</h2>
+        <table class="config-table">
+          <thead>
+            <tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>memory.enabled</code></td><td>boolean</td><td><code>true</code></td><td>Enable persistent memory</td></tr>
+            <tr><td><code>memory.backend</code></td><td>string</td><td><code>"local"</code></td><td>Storage backend: <code>local</code> (SQLite + vectors) or <code>postgres</code></td></tr>
+            <tr><td><code>memory.embeddingModel</code></td><td>string</td><td><code>"all-MiniLM-L6-v2"</code></td><td>Embedding model for vector search</td></tr>
+            <tr><td><code>memory.maxResults</code></td><td>number</td><td><code>10</code></td><td>Max memory entries retrieved per query</td></tr>
+            <tr><td><code>memory.autoSave</code></td><td>boolean</td><td><code>true</code></td><td>Automatically save conversation facts to memory</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Scheduler Settings</h2>
+        <table class="config-table">
+          <thead>
+            <tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>scheduler.enabled</code></td><td>boolean</td><td><code>true</code></td><td>Enable the built-in cron scheduler</td></tr>
+            <tr><td><code>scheduler.timezone</code></td><td>string</td><td><code>"UTC"</code></td><td>IANA timezone for cron expressions</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Creating Scheduled Tasks</h3>
+        <p>You can schedule recurring tasks via the CLI or by adding them to config:</p>
+
+<pre><code class="language-bash"># Schedule a daily summary at 9 AM
+openhoof schedule add --cron "0 9 * * *" --task "Summarize my unread emails"
+
+# List scheduled tasks
+openhoof schedule list
+
+# Remove a scheduled task
+openhoof schedule remove &lt;task-id&gt;</code></pre>
+
+        <h2>Environment Variables</h2>
+        <p>All config options can be overridden with environment variables. The naming convention is <code>OPENHOOF_</code> followed by the config path in uppercase with underscores:</p>
+
+<pre><code class="language-bash"># Override the port
+OPENHOOF_DAEMON_PORT=4000 openhoof start
+
+# Override the AI provider and model
+OPENHOOF_AGENT_PROVIDER=openai OPENHOOF_AGENT_MODEL=gpt-4o openhoof start
+
+# Set API key via environment (recommended for security)
+export OPENHOOF_AGENT_APIKEY=sk-...</code></pre>
+
+        <div class="callout callout-tip">
+          <span class="callout-icon">💡</span>
+          <div>It's best practice to store API keys as environment variables rather than in the config file directly. This prevents accidental exposure if you share your config.</div>
+        </div>
+
+        <div class="page-nav">
+          <a href="installation.html">← Installation</a>
+          <a href="channels.html" class="next">Channels →</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    hljs.highlightAll();
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Reference — OpenHoof Docs</title>
+  <link rel="stylesheet" href="docs-style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐴</text></svg>">
+</head>
+<body>
+  <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">☰</button>
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <div class="docs-layout">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" class="sidebar-logo">Open<span>Hoof</span></a>
+        <span class="sidebar-badge">docs</span>
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Getting Started</div>
+          <a href="index.html" class="sidebar-link">
+            <span class="sidebar-link-icon">⚡</span> Introduction
+          </a>
+          <a href="installation.html" class="sidebar-link">
+            <span class="sidebar-link-icon">📦</span> Installation
+          </a>
+          <a href="configuration.html" class="sidebar-link">
+            <span class="sidebar-link-icon">⚙️</span> Configuration
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Core Features</div>
+          <a href="channels.html" class="sidebar-link">
+            <span class="sidebar-link-icon">💬</span> Channels
+          </a>
+          <a href="skills.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🧩</span> Skills
+          </a>
+          <a href="memory.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🧠</span> Memory
+          </a>
+          <a href="agents.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🤖</span> Agents
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Reference</div>
+          <a href="api.html" class="sidebar-link active">
+            <span class="sidebar-link-icon">📡</span> API Reference
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="content-header">
+        <div class="breadcrumb">
+          <a href="../index.html">OpenHoof</a>
+          <span class="breadcrumb-sep">/</span>
+          <a href="index.html">Docs</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">API Reference</span>
+        </div>
+        <div class="header-links">
+          <a href="https://github.com/openclaw/openhoof" class="header-link">GitHub</a>
+        </div>
+      </div>
+
+      <div class="content">
+        <h1>API <span class="accent">Reference</span></h1>
+        <p class="subtitle">OpenHoof exposes a local REST API and WebSocket endpoint for programmatic access. Use it to send messages, manage memory, control skills, and integrate with your own tools.</p>
+
+        <h2>Base URL</h2>
+        <p>All API endpoints are served from the daemon's HTTP server:</p>
+
+<pre><code class="language-text">http://localhost:3777/api/v1</code></pre>
+
+        <p>The port is configurable via <code>daemon.port</code> in your config. All responses are JSON unless otherwise noted.</p>
+
+        <h2>Authentication</h2>
+        <p>By default, the API has no authentication (it only binds to localhost). If you expose the daemon to your network, enable API key authentication:</p>
+
+<pre><code class="language-json">{
+  "daemon": {
+    "host": "0.0.0.0",
+    "apiKey": "your-secret-api-key"
+  }
+}</code></pre>
+
+        <p>Include the key in requests via the <code>Authorization</code> header:</p>
+
+<pre><code class="language-bash">curl -H "Authorization: Bearer your-secret-api-key" \
+  http://localhost:3777/api/v1/status</code></pre>
+
+        <h2>Chat</h2>
+
+        <h3>POST /api/v1/chat</h3>
+        <p>Send a message and receive an AI response.</p>
+
+<pre><code class="language-bash">curl -X POST http://localhost:3777/api/v1/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "What is the capital of France?",
+    "conversationId": "conv_abc123",
+    "agent": "default"
+  }'</code></pre>
+
+        <p><strong>Request body:</strong></p>
+        <table class="config-table">
+          <thead>
+            <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>message</code></td><td>string</td><td>yes</td><td>The user's message</td></tr>
+            <tr><td><code>conversationId</code></td><td>string</td><td>no</td><td>Continue an existing conversation. Omit to start a new one</td></tr>
+            <tr><td><code>agent</code></td><td>string</td><td>no</td><td>Named agent to use. Defaults to the default agent</td></tr>
+            <tr><td><code>stream</code></td><td>boolean</td><td>no</td><td>Enable SSE streaming (default: <code>false</code>)</td></tr>
+          </tbody>
+        </table>
+
+        <p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  "conversationId": "conv_abc123",
+  "message": {
+    "role": "assistant",
+    "content": "The capital of France is Paris.",
+    "model": "claude-sonnet-4-20250514",
+    "tokens": { "input": 24, "output": 12 }
+  }
+}</code></pre>
+
+        <h3>POST /api/v1/chat (Streaming)</h3>
+        <p>Set <code>"stream": true</code> to receive Server-Sent Events:</p>
+
+<pre><code class="language-bash">curl -N -X POST http://localhost:3777/api/v1/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Write a haiku", "stream": true}'</code></pre>
+
+<pre><code class="language-text">data: {"type":"start","conversationId":"conv_xyz"}
+data: {"type":"delta","content":"Silent"}
+data: {"type":"delta","content":" morning"}
+data: {"type":"delta","content":" dew"}
+...
+data: {"type":"done","tokens":{"input":12,"output":28}}</code></pre>
+
+        <h2>WebSocket</h2>
+        <p>For real-time bidirectional communication, connect via WebSocket:</p>
+
+<pre><code class="language-javascript">const ws = new WebSocket('ws://localhost:3777/ws');
+
+ws.onopen = () => {
+  ws.send(JSON.stringify({
+    type: 'chat',
+    message: 'Hello from WebSocket!',
+    conversationId: 'conv_ws_001'
+  }));
+};
+
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  if (data.type === 'delta') {
+    process.stdout.write(data.content);
+  } else if (data.type === 'done') {
+    console.log('\n[Done]');
+  }
+};</code></pre>
+
+        <h2>Memory</h2>
+
+        <h3>GET /api/v1/memory/search?q={query}</h3>
+        <p>Search memory with semantic similarity:</p>
+
+<pre><code class="language-bash">curl "http://localhost:3777/api/v1/memory/search?q=user+preferences&limit=5"</code></pre>
+
+<pre><code class="language-json">{
+  "results": [
+    {
+      "id": "mem_001",
+      "content": "User prefers dark mode in all applications",
+      "similarity": 0.89,
+      "createdAt": "2025-06-15T10:30:00Z",
+      "namespace": "default"
+    }
+  ]
+}</code></pre>
+
+        <h3>POST /api/v1/memory</h3>
+        <p>Add a memory entry:</p>
+
+<pre><code class="language-bash">curl -X POST http://localhost:3777/api/v1/memory \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Project deadline is March 30th",
+    "namespace": "work"
+  }'</code></pre>
+
+        <h3>DELETE /api/v1/memory/:id</h3>
+        <p>Delete a memory entry by ID:</p>
+
+<pre><code class="language-bash">curl -X DELETE http://localhost:3777/api/v1/memory/mem_001</code></pre>
+
+        <h2>Skills</h2>
+
+        <h3>GET /api/v1/skills</h3>
+        <p>List all installed skills:</p>
+
+<pre><code class="language-bash">curl http://localhost:3777/api/v1/skills</code></pre>
+
+<pre><code class="language-json">{
+  "skills": [
+    {
+      "name": "web-browse",
+      "version": "1.2.0",
+      "enabled": true,
+      "tools": ["browse_url", "extract_text", "screenshot_page"]
+    },
+    {
+      "name": "code-exec",
+      "version": "1.0.0",
+      "enabled": true,
+      "tools": ["execute_code", "run_shell"]
+    }
+  ]
+}</code></pre>
+
+        <h3>POST /api/v1/skills/:name/execute</h3>
+        <p>Execute a skill tool directly:</p>
+
+<pre><code class="language-bash">curl -X POST http://localhost:3777/api/v1/skills/web-browse/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool": "browse_url",
+    "params": {
+      "url": "https://example.com",
+      "extractText": true
+    }
+  }'</code></pre>
+
+        <h2>System</h2>
+
+        <h3>GET /api/v1/status</h3>
+        <p>Get daemon status and system information:</p>
+
+<pre><code class="language-bash">curl http://localhost:3777/api/v1/status</code></pre>
+
+<pre><code class="language-json">{
+  "status": "running",
+  "version": "1.4.2",
+  "uptime": 86400,
+  "agent": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-20250514"
+  },
+  "channels": {
+    "webchat": { "status": "connected" },
+    "telegram": { "status": "connected" },
+    "discord": { "status": "disconnected" }
+  },
+  "memory": {
+    "entries": 1247,
+    "backend": "local"
+  }
+}</code></pre>
+
+        <h3>POST /api/v1/config/reload</h3>
+        <p>Hot-reload the configuration without restarting the daemon:</p>
+
+<pre><code class="language-bash">curl -X POST http://localhost:3777/api/v1/config/reload</code></pre>
+
+        <h2>Scheduler</h2>
+
+        <h3>GET /api/v1/schedules</h3>
+        <p>List all scheduled tasks:</p>
+
+<pre><code class="language-bash">curl http://localhost:3777/api/v1/schedules</code></pre>
+
+        <h3>POST /api/v1/schedules</h3>
+        <p>Create a new scheduled task:</p>
+
+<pre><code class="language-bash">curl -X POST http://localhost:3777/api/v1/schedules \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cron": "0 9 * * 1-5",
+    "task": "Summarize my unread emails and create a to-do list",
+    "agent": "default",
+    "channel": "telegram"
+  }'</code></pre>
+
+        <h2>Error Responses</h2>
+        <p>All errors follow a consistent format:</p>
+
+<pre><code class="language-json">{
+  "error": {
+    "code": "INVALID_REQUEST",
+    "message": "The 'message' field is required",
+    "status": 400
+  }
+}</code></pre>
+
+        <p>Common error codes:</p>
+        <table class="config-table">
+          <thead>
+            <tr><th>Code</th><th>Status</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>INVALID_REQUEST</code></td><td>400</td><td>Missing or invalid request parameters</td></tr>
+            <tr><td><code>UNAUTHORIZED</code></td><td>401</td><td>Missing or invalid API key</td></tr>
+            <tr><td><code>NOT_FOUND</code></td><td>404</td><td>Resource not found</td></tr>
+            <tr><td><code>AGENT_ERROR</code></td><td>502</td><td>The upstream AI provider returned an error</td></tr>
+            <tr><td><code>RATE_LIMITED</code></td><td>429</td><td>Too many requests (provider rate limit)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="page-nav">
+          <a href="agents.html">← Agents</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    hljs.highlightAll();
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

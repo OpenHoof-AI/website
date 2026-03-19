@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory — OpenHoof Docs</title>
+  <link rel="stylesheet" href="docs-style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐴</text></svg>">
+</head>
+<body>
+  <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">☰</button>
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <div class="docs-layout">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" class="sidebar-logo">Open<span>Hoof</span></a>
+        <span class="sidebar-badge">docs</span>
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Getting Started</div>
+          <a href="index.html" class="sidebar-link">
+            <span class="sidebar-link-icon">⚡</span> Introduction
+          </a>
+          <a href="installation.html" class="sidebar-link">
+            <span class="sidebar-link-icon">📦</span> Installation
+          </a>
+          <a href="configuration.html" class="sidebar-link">
+            <span class="sidebar-link-icon">⚙️</span> Configuration
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Core Features</div>
+          <a href="channels.html" class="sidebar-link">
+            <span class="sidebar-link-icon">💬</span> Channels
+          </a>
+          <a href="skills.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🧩</span> Skills
+          </a>
+          <a href="memory.html" class="sidebar-link active">
+            <span class="sidebar-link-icon">🧠</span> Memory
+          </a>
+          <a href="agents.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🤖</span> Agents
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Reference</div>
+          <a href="api.html" class="sidebar-link">
+            <span class="sidebar-link-icon">📡</span> API Reference
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="content-header">
+        <div class="breadcrumb">
+          <a href="../index.html">OpenHoof</a>
+          <span class="breadcrumb-sep">/</span>
+          <a href="index.html">Docs</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Memory</span>
+        </div>
+        <div class="header-links">
+          <a href="https://github.com/openclaw/openhoof" class="header-link">GitHub</a>
+        </div>
+      </div>
+
+      <div class="content">
+        <h1>Memory <span class="accent">System</span></h1>
+        <p class="subtitle">OpenHoof gives your AI persistent memory using vector embeddings stored locally. Your agent remembers past conversations, user preferences, and important facts across sessions — without sending anything to the cloud.</p>
+
+        <h2>How Memory Works</h2>
+        <p>The memory system has three layers:</p>
+        <ol>
+          <li><strong>Conversation buffer</strong> — The current chat session's messages, kept in RAM. This is the immediate context the AI sees.</li>
+          <li><strong>Short-term memory</strong> — Recent conversation summaries and extracted facts, stored in SQLite. Automatically pulled into context when relevant.</li>
+          <li><strong>Long-term memory</strong> — All stored facts and conversations as vector embeddings. Searched via semantic similarity when the AI needs to recall something.</li>
+        </ol>
+        <p>When you send a message, OpenHoof queries long-term memory for semantically relevant entries and injects them into the agent's context. The AI sees these memories alongside your current message, giving it the ability to reference past discussions naturally.</p>
+
+        <h2>Auto-Save Mode</h2>
+        <p>When <code>memory.autoSave</code> is enabled (the default), OpenHoof automatically extracts and stores important facts from conversations. The extraction runs after each exchange and identifies:</p>
+        <ul>
+          <li>User preferences and personal details</li>
+          <li>Decisions and agreements</li>
+          <li>Technical information and project context</li>
+          <li>Tasks and follow-ups</li>
+        </ul>
+
+<pre><code class="language-json">{
+  "memory": {
+    "enabled": true,
+    "autoSave": true,
+    "autoSaveThreshold": 0.7
+  }
+}</code></pre>
+
+        <p>The <code>autoSaveThreshold</code> controls how aggressively facts are saved. Lower values (0.3–0.5) save more aggressively; higher values (0.7–0.9) only save clearly important information.</p>
+
+        <h2>Manual Memory Management</h2>
+        <p>You can also manage memory directly through the CLI:</p>
+
+<pre><code class="language-bash"># Add a memory entry manually
+openhoof memory add "User prefers dark mode in all applications"
+
+# Search memory
+openhoof memory search "user preferences"
+
+# List recent memory entries
+openhoof memory list --limit 20
+
+# Delete a specific memory entry by ID
+openhoof memory delete mem_abc123
+
+# Export all memories to a JSON file
+openhoof memory export > memories.json
+
+# Import memories from a JSON file
+openhoof memory import memories.json
+
+# Clear all memory (destructive!)
+openhoof memory clear --confirm</code></pre>
+
+        <h2>Memory via Chat</h2>
+        <p>Your AI agent can also manage its own memory during conversations. You can tell it to remember things:</p>
+
+<pre><code class="language-text">You: Remember that my server IP is 192.168.1.100
+AI: Got it, I've saved that to memory. I'll remember your server IP is 192.168.1.100.
+
+You: What's my server IP?
+AI: Your server IP is 192.168.1.100.
+
+You: Forget my server IP
+AI: Done, I've removed that from my memory.</code></pre>
+
+        <p>The agent uses built-in memory tools to store, search, and delete entries during conversations.</p>
+
+        <h2>Vector Embeddings</h2>
+        <p>Memory entries are converted to vector embeddings for semantic search. OpenHoof uses a local embedding model by default, so nothing leaves your machine:</p>
+
+        <table class="config-table">
+          <thead>
+            <tr><th>Option</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>memory.embeddingModel</code></td><td><code>"all-MiniLM-L6-v2"</code></td><td>The sentence-transformer model used for embeddings</td></tr>
+            <tr><td><code>memory.embeddingDimensions</code></td><td><code>384</code></td><td>Vector dimensions (must match the model)</td></tr>
+            <tr><td><code>memory.similarityThreshold</code></td><td><code>0.65</code></td><td>Minimum similarity score for memory retrieval</td></tr>
+            <tr><td><code>memory.maxResults</code></td><td><code>10</code></td><td>Maximum memories injected per query</td></tr>
+          </tbody>
+        </table>
+
+        <p>The default model (<code>all-MiniLM-L6-v2</code>) is downloaded automatically on first use (~80MB). It runs on CPU and is fast enough for real-time memory lookups.</p>
+
+        <h3>Using OpenAI Embeddings</h3>
+        <p>For higher quality embeddings, you can use OpenAI's API instead:</p>
+
+<pre><code class="language-json">{
+  "memory": {
+    "embeddingProvider": "openai",
+    "embeddingModel": "text-embedding-3-small",
+    "embeddingApiKey": "sk-..."
+  }
+}</code></pre>
+
+        <h2>Storage Backends</h2>
+
+        <h3>Local (Default)</h3>
+        <p>Stores everything in SQLite with a vector index. Data lives at <code>~/.openhoof/memory.db</code>. Zero configuration, works everywhere:</p>
+
+<pre><code class="language-json">{
+  "memory": {
+    "backend": "local",
+    "dbPath": "~/.openhoof/memory.db"
+  }
+}</code></pre>
+
+        <h3>PostgreSQL</h3>
+        <p>For larger deployments or if you want to share memory across machines, use PostgreSQL with the <code>pgvector</code> extension:</p>
+
+<pre><code class="language-json">{
+  "memory": {
+    "backend": "postgres",
+    "postgresUrl": "postgresql://user:pass@localhost:5432/openhoof"
+  }
+}</code></pre>
+
+        <div class="callout callout-info">
+          <span class="callout-icon">ℹ️</span>
+          <div>PostgreSQL requires the <code>pgvector</code> extension. Install it with <code>CREATE EXTENSION vector;</code> in your database. OpenHoof creates the required tables automatically on first connection.</div>
+        </div>
+
+        <h2>Memory Namespaces</h2>
+        <p>You can organize memories into namespaces to separate concerns. This is useful if multiple people use the same OpenHoof instance or if you want per-project memory:</p>
+
+<pre><code class="language-bash"># Add to a specific namespace
+openhoof memory add "Project uses React 19" --namespace "work/frontend"
+
+# Search within a namespace
+openhoof memory search "React version" --namespace "work/frontend"</code></pre>
+
+        <p>In config, you can assign namespaces per channel:</p>
+
+<pre><code class="language-json">{
+  "channels": {
+    "telegram": {
+      "memoryNamespace": "personal"
+    },
+    "slack": {
+      "memoryNamespace": "work"
+    }
+  }
+}</code></pre>
+
+        <div class="page-nav">
+          <a href="skills.html">← Skills</a>
+          <a href="agents.html" class="next">Agents →</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    hljs.highlightAll();
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

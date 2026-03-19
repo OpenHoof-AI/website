@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Installation — OpenHoof Docs</title>
+  <link rel="stylesheet" href="docs-style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐴</text></svg>">
+</head>
+<body>
+  <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">☰</button>
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <div class="docs-layout">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" class="sidebar-logo">Open<span>Hoof</span></a>
+        <span class="sidebar-badge">docs</span>
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Getting Started</div>
+          <a href="index.html" class="sidebar-link">
+            <span class="sidebar-link-icon">⚡</span> Introduction
+          </a>
+          <a href="installation.html" class="sidebar-link active">
+            <span class="sidebar-link-icon">📦</span> Installation
+          </a>
+          <a href="configuration.html" class="sidebar-link">
+            <span class="sidebar-link-icon">⚙️</span> Configuration
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Core Features</div>
+          <a href="channels.html" class="sidebar-link">
+            <span class="sidebar-link-icon">💬</span> Channels
+          </a>
+          <a href="skills.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🧩</span> Skills
+          </a>
+          <a href="memory.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🧠</span> Memory
+          </a>
+          <a href="agents.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🤖</span> Agents
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Reference</div>
+          <a href="api.html" class="sidebar-link">
+            <span class="sidebar-link-icon">📡</span> API Reference
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="content-header">
+        <div class="breadcrumb">
+          <a href="../index.html">OpenHoof</a>
+          <span class="breadcrumb-sep">/</span>
+          <a href="index.html">Docs</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Installation</span>
+        </div>
+        <div class="header-links">
+          <a href="https://github.com/openclaw/openhoof" class="header-link">GitHub</a>
+        </div>
+      </div>
+
+      <div class="content">
+        <h1>Installation <span class="accent">Guide</span></h1>
+        <p class="subtitle">Install OpenHoof globally via npm and get the daemon running on your machine in minutes. Supports macOS, Linux, and Windows via WSL.</p>
+
+        <h2>Prerequisites</h2>
+        <p>Before installing OpenHoof, make sure you have the following:</p>
+        <ul>
+          <li><strong>Node.js v18+</strong> — We recommend using the latest LTS release. Check your version with <code>node -v</code>.</li>
+          <li><strong>npm v9+</strong> — Ships with Node.js. Verify with <code>npm -v</code>.</li>
+          <li><strong>An AI provider API key</strong> — You'll need at least one: Anthropic (Claude), OpenAI (GPT), Google (Gemini), xAI (Grok), or a local Ollama instance.</li>
+        </ul>
+
+        <div class="callout callout-info">
+          <span class="callout-icon">ℹ️</span>
+          <div>On Windows, OpenHoof must run inside WSL (Windows Subsystem for Linux). Native Windows support is not available due to process management dependencies.</div>
+        </div>
+
+        <h2>Install via npm</h2>
+        <p>The recommended installation method is via npm global install:</p>
+
+<pre><code class="language-bash"># Install OpenHoof globally
+npm i -g openhoof
+
+# Verify the installation
+openhoof --version</code></pre>
+
+        <p>This installs the <code>openhoof</code> CLI binary and all dependencies. The binary is added to your system PATH automatically.</p>
+
+        <h3>Alternative: Install from source</h3>
+        <p>If you prefer to run from source or want to contribute:</p>
+
+<pre><code class="language-bash"># Clone the repository
+git clone https://github.com/openclaw/openhoof.git
+cd openhoof
+
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Link the CLI globally
+npm link</code></pre>
+
+        <h2>Initialize Configuration</h2>
+        <p>After installation, run the init command to create your configuration file:</p>
+
+<pre><code class="language-bash">openhoof init</code></pre>
+
+        <p>This creates <code>~/.openhoof/config.json</code> with sensible defaults and walks you through an interactive setup:</p>
+        <ol>
+          <li><strong>Choose a default AI provider</strong> — Select from Claude, GPT, Gemini, Grok, or Ollama</li>
+          <li><strong>Enter your API key</strong> — Stored locally in your config file, never transmitted elsewhere</li>
+          <li><strong>Select a default model</strong> — Pick the specific model variant (e.g., <code>claude-sonnet-4-20250514</code>)</li>
+          <li><strong>Set the daemon port</strong> — Defaults to <code>3777</code></li>
+        </ol>
+
+        <p>You can always edit the config manually later. See <a href="configuration.html">Configuration</a> for all available options.</p>
+
+        <h2>Start the Daemon</h2>
+        <p>Launch the OpenHoof daemon:</p>
+
+<pre><code class="language-bash"># Start in the background
+openhoof start
+
+# Or run in the foreground (useful for debugging)
+openhoof start --foreground</code></pre>
+
+        <p>The daemon starts listening on <code>http://localhost:3777</code>. Open this URL in your browser to access the built-in webchat UI.</p>
+
+        <h3>Daemon Management</h3>
+
+<pre><code class="language-bash"># Check if the daemon is running
+openhoof status
+
+# View real-time logs
+openhoof logs -f
+
+# Restart the daemon
+openhoof restart
+
+# Stop the daemon
+openhoof stop</code></pre>
+
+        <h2>Auto-Start on Boot</h2>
+        <p>To have OpenHoof start automatically when your machine boots:</p>
+
+        <h3>macOS (launchd)</h3>
+<pre><code class="language-bash">openhoof service install
+# This creates a LaunchAgent plist and loads it</code></pre>
+
+        <h3>Linux (systemd)</h3>
+<pre><code class="language-bash">openhoof service install
+# This creates and enables a systemd user service</code></pre>
+
+        <p>To remove the auto-start service:</p>
+<pre><code class="language-bash">openhoof service uninstall</code></pre>
+
+        <h2>Updating</h2>
+        <p>Update to the latest version with npm:</p>
+
+<pre><code class="language-bash"># Update OpenHoof
+npm update -g openhoof
+
+# Restart the daemon to use the new version
+openhoof restart</code></pre>
+
+        <div class="callout callout-warn">
+          <span class="callout-icon">⚠️</span>
+          <div>After updating, always restart the daemon. The running daemon uses the old binary until restarted. Check the <a href="https://github.com/openclaw/openhoof/releases">changelog</a> for breaking changes before major version upgrades.</div>
+        </div>
+
+        <h2>Uninstalling</h2>
+        <p>To completely remove OpenHoof:</p>
+
+<pre><code class="language-bash"># Remove the auto-start service (if installed)
+openhoof service uninstall
+
+# Stop the daemon
+openhoof stop
+
+# Uninstall the package
+npm uninstall -g openhoof
+
+# Optionally remove config and data
+rm -rf ~/.openhoof</code></pre>
+
+        <h2>Troubleshooting</h2>
+
+        <h3>Permission errors on npm install</h3>
+        <p>If you get <code>EACCES</code> errors, fix your npm permissions instead of using <code>sudo</code>:</p>
+
+<pre><code class="language-bash"># Create a directory for global packages
+mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+
+# Add to your shell profile (~/.zshrc or ~/.bashrc)
+export PATH=~/.npm-global/bin:$PATH</code></pre>
+
+        <h3>Port already in use</h3>
+        <p>If port 3777 is taken, specify a different port in your config or via the CLI:</p>
+
+<pre><code class="language-bash">openhoof start --port 3778</code></pre>
+
+        <h3>Daemon won't start</h3>
+        <p>Run in foreground mode to see the error output:</p>
+
+<pre><code class="language-bash">openhoof start --foreground</code></pre>
+
+        <div class="page-nav">
+          <a href="index.html">← Introduction</a>
+          <a href="configuration.html" class="next">Configuration →</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    hljs.highlightAll();
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

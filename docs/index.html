@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Started — OpenHoof Docs</title>
+  <link rel="stylesheet" href="docs-style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐴</text></svg>">
+</head>
+<body>
+  <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">☰</button>
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <div class="docs-layout">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" class="sidebar-logo">Open<span>Hoof</span></a>
+        <span class="sidebar-badge">docs</span>
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Getting Started</div>
+          <a href="index.html" class="sidebar-link active">
+            <span class="sidebar-link-icon">⚡</span> Introduction
+          </a>
+          <a href="installation.html" class="sidebar-link">
+            <span class="sidebar-link-icon">📦</span> Installation
+          </a>
+          <a href="configuration.html" class="sidebar-link">
+            <span class="sidebar-link-icon">⚙️</span> Configuration
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Core Features</div>
+          <a href="channels.html" class="sidebar-link">
+            <span class="sidebar-link-icon">💬</span> Channels
+          </a>
+          <a href="skills.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🧩</span> Skills
+          </a>
+          <a href="memory.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🧠</span> Memory
+          </a>
+          <a href="agents.html" class="sidebar-link">
+            <span class="sidebar-link-icon">🤖</span> Agents
+          </a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Reference</div>
+          <a href="api.html" class="sidebar-link">
+            <span class="sidebar-link-icon">📡</span> API Reference
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="content-header">
+        <div class="breadcrumb">
+          <a href="../index.html">OpenHoof</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Getting Started</span>
+        </div>
+        <div class="header-links">
+          <a href="https://github.com/openclaw/openhoof" class="header-link">GitHub</a>
+        </div>
+      </div>
+
+      <div class="content">
+        <h1>Getting Started with <span class="accent">OpenHoof</span></h1>
+        <p class="subtitle">OpenHoof is an uncensored, self-hosted AI agent platform. It runs as a local daemon on your machine and connects to any chat app, giving you a personal AI with persistent memory, web browsing, code execution, and zero restrictions.</p>
+
+        <h2>What is OpenHoof?</h2>
+        <p>OpenHoof is an AI gateway that sits between you and any large language model. Instead of chatting through a web UI controlled by someone else, you run OpenHoof locally and interact with your AI through the apps you already use — Telegram, Discord, WhatsApp, Slack, Signal, iMessage, or LINE.</p>
+        <p>Your AI agent has full access to your machine. It can browse the web, execute shell commands, read and write files, schedule tasks, and remember everything you've ever discussed. There are no guardrails, no content filters, and no usage limits beyond what your model provider charges.</p>
+
+        <h2>Quick Start</h2>
+        <p>Get running in under two minutes:</p>
+
+<pre><code class="language-bash"># Install globally
+npm i -g openhoof
+
+# Initialize your config
+openhoof init
+
+# Start the daemon
+openhoof start</code></pre>
+
+        <p>After starting, OpenHoof runs as a background daemon. You'll get a local web UI at <code>http://localhost:3777</code> where you can chat immediately. To connect a chat app, see the <a href="channels.html">Channels</a> guide.</p>
+
+        <h2>Core Concepts</h2>
+
+        <h3>The Daemon</h3>
+        <p>OpenHoof runs as a persistent background process. It listens for messages from connected channels, routes them to your configured AI model, and streams responses back. The daemon also manages memory, scheduled tasks, and skill execution.</p>
+
+<pre><code class="language-bash"># Check daemon status
+openhoof status
+
+# View logs in real-time
+openhoof logs -f
+
+# Stop the daemon
+openhoof stop</code></pre>
+
+        <h3>Channels</h3>
+        <p>Channels are the interfaces through which you talk to your AI. Each channel connects to a different messaging platform. You can have multiple channels active simultaneously — message your AI on Telegram while it also monitors a Discord server. See <a href="channels.html">Channels</a> for setup instructions.</p>
+
+        <h3>Skills</h3>
+        <p>Skills extend your agent's capabilities. They're plugins that give your AI new tools — web browsing, code execution, image generation, file management, and more. Install community skills or write your own. See <a href="skills.html">Skills</a> for details.</p>
+
+        <h3>Memory</h3>
+        <p>OpenHoof maintains persistent memory using vector embeddings stored locally. Your AI remembers past conversations, user preferences, and facts across sessions. Memory is searchable and can be manually managed. See <a href="memory.html">Memory</a> for the full guide.</p>
+
+        <h3>Agents</h3>
+        <p>An agent is the AI model configuration that powers your responses. OpenHoof supports Claude, GPT, Gemini, Grok, and local models via Ollama. You can configure multiple agents for different channels or use cases. See <a href="agents.html">Agents</a>.</p>
+
+        <h2>System Requirements</h2>
+        <ul>
+          <li><strong>Node.js</strong> v18 or later</li>
+          <li><strong>OS:</strong> macOS, Linux, or Windows (WSL recommended)</li>
+          <li><strong>RAM:</strong> 512MB minimum (more if running local models via Ollama)</li>
+          <li><strong>Disk:</strong> ~200MB for OpenHoof + memory storage</li>
+        </ul>
+
+        <h2>Project Philosophy</h2>
+        <p>OpenHoof exists because AI should work for you, not the other way around. Commercial AI products decide what you can and can't ask. They log your conversations. They refuse to help with legitimate tasks because of overly broad content policies.</p>
+        <p>OpenHoof is different. It's your machine, your data, your rules. The platform is model-agnostic — swap providers any time. Your conversation history and memory stay on your disk, never uploaded anywhere. And there are no artificial restrictions on what your AI can discuss or do.</p>
+
+        <div class="callout callout-tip">
+          <span class="callout-icon">💡</span>
+          <div>Ready to install? Head to the <a href="installation.html">Installation Guide</a> for detailed setup instructions, or jump straight to <a href="configuration.html">Configuration</a> if you've already installed.</div>
+        </div>
+
+        <div class="page-nav">
+          <a href="installation.html" class="next">Installation →</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    hljs.highlightAll();
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>
